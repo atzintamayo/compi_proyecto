@@ -204,7 +204,8 @@ void MainWindow::setupTabScanner() {
 
 
 void MainWindow::onCrearAFN() {
-    CrearAFNDialog dialog(this);
+    // CORRECCIÓN: Pasar el afnManager al diálogo
+    CrearAFNDialog dialog(this, afnManager);
     if (dialog.exec() == QDialog::Accepted) {
         AFN* nuevoAFN = dialog.getAFNCreado();
         QString nombre = dialog.getNombre();

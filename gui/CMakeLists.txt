@@ -1,35 +1,42 @@
-# GUI Application - Qt6
+# ============================================
+# Ejecutable principal con GUI modular
+# ============================================
 
 set(GUI_SOURCES
     main.cpp
     MainWindow.cpp
     MainWindow.h
-    dialogs/CrearAFNDialog.cpp
-    dialogs/CrearAFNDialog.h
-    dialogs/AsignarTokenDialog.cpp
-    dialogs/AsignarTokenDialog.h
-    widgets/AFNTableWidget.cpp
-    widgets/AFNTableWidget.h
-    widgets/AFDTableWidget.cpp
-    widgets/AFDTableWidget.h
+    
+    # Módulo: Analizador Léxico
+    modules/analizador_lexico/AnalizadorLexicoWidget.cpp
+    modules/analizador_lexico/AnalizadorLexicoWidget.h
+    modules/analizador_lexico/dialogs/CrearAFNDialog.cpp
+    modules/analizador_lexico/dialogs/CrearAFNDialog.h
+    modules/analizador_lexico/dialogs/AsignarTokenDialog.cpp
+    modules/analizador_lexico/dialogs/AsignarTokenDialog.h
+    modules/analizador_lexico/widgets/AFNTableWidget.cpp
+    modules/analizador_lexico/widgets/AFNTableWidget.h
+    modules/analizador_lexico/widgets/AFDTableWidget.cpp
+    modules/analizador_lexico/widgets/AFDTableWidget.h
+    
+    # Módulo: Calculadora
+    modules/calculadora/CalculadoraWidget.cpp
+    modules/calculadora/CalculadoraWidget.h
 )
 
-add_executable(AnalizadorLexicoGUI ${GUI_SOURCES})
+add_executable(CompiladorTools ${GUI_SOURCES})
 
-target_link_libraries(AnalizadorLexicoGUI PRIVATE
-    automatas_core
+target_link_libraries(CompiladorTools PRIVATE
     Qt6::Core
+    Qt6::Gui
     Qt6::Widgets
+    AnalizadorLexicoCore
+    CalculadoraCore
 )
 
-target_include_directories(AnalizadorLexicoGUI PRIVATE
+target_include_directories(CompiladorTools PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets
-)
-
-# Configuración específica de Qt
-set_target_properties(AnalizadorLexicoGUI PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    MACOSX_BUNDLE TRUE
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules/analizador_lexico
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules/calculadora
 )

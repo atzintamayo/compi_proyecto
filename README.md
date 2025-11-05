@@ -9,9 +9,10 @@ Usa CMake
 ## Usage
 
 ```bash
-cd compi_proyecto
 
 mkdir build && cd build
+
+rm -rf *
 
 cmake ..
 

@@ -31,4 +31,24 @@ target_include_directories(CalculadoraCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/calculadora
 )
 
+# ============================================
+# Biblioteca Core - LL(1)
+# ============================================
+add_library(LL1Core STATIC
+    ll1/Lexer.cpp
+    ll1/Lexer.h
+    ll1/Gramatica.cpp
+    ll1/Gramatica.h
+    ll1/ConjuntosLL1.cpp
+    ll1/ConjuntosLL1.h
+    ll1/TablaLL1.cpp
+    ll1/TablaLL1.h
+    ll1/ParserLL1.cpp
+    ll1/ParserLL1.h
+)
+
+target_include_directories(LL1Core PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/ll1
+)
+
 # Puedes agregar más módulos core aquí siguiendo el mismo patrón

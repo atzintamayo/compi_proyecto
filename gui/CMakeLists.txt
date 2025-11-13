@@ -22,6 +22,10 @@ set(GUI_SOURCES
     # Módulo: Calculadora
     modules/calculadora/CalculadoraWidget.cpp
     modules/calculadora/CalculadoraWidget.h
+    
+    # Módulo: LL(1)
+    modules/ll1/LL1Widget.cpp
+    modules/ll1/LL1Widget.h
 )
 
 add_executable(CompiladorTools ${GUI_SOURCES})
@@ -32,6 +36,7 @@ target_link_libraries(CompiladorTools PRIVATE
     Qt6::Widgets
     AnalizadorLexicoCore
     CalculadoraCore
+    LL1Core
 )
 
 target_include_directories(CompiladorTools PRIVATE
@@ -39,4 +44,8 @@ target_include_directories(CompiladorTools PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/modules
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/analizador_lexico
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/calculadora
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules/ll1
+    ${CMAKE_SOURCE_DIR}/core/analizador_lexico
+    ${CMAKE_SOURCE_DIR}/core/calculadora
+    ${CMAKE_SOURCE_DIR}/core/ll1
 )

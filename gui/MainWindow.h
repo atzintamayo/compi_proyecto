@@ -10,6 +10,7 @@
 // Forward declarations de los módulos
 class AnalizadorLexicoWidget;
 class CalculadoraWidget;
+class LL1Widget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -21,6 +22,7 @@ public:
 private slots:
     void mostrarAnalizadorLexico();
     void mostrarCalculadora();
+    void mostrarLL1();
     void mostrarGramatica();
     void mostrarAcercaDe();
 
@@ -38,6 +40,7 @@ private:
     // Módulos
     AnalizadorLexicoWidget* analizadorLexicoWidget;
     CalculadoraWidget* calculadoraWidget;
+    LL1Widget* ll1Widget;
     // Agregar más módulos aquí según sea necesario
     
     // Menús
@@ -47,6 +50,7 @@ private:
     // Acciones
     QAction* accionAnalizadorLexico;
     QAction* accionCalculadora;
+    QAction* accionLL1;
     QAction* accionGramatica;
     QAction* accionAcercaDe;
 };

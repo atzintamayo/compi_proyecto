@@ -1,14 +1,16 @@
 #include "MainWindow.h"
 #include "modules/analizador_lexico/AnalizadorLexicoWidget.h"
 #include "modules/calculadora/CalculadoraWidget.h"
-
+#include "modules/ll1/LL1Widget.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
 
+//constructor
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Inicializar widgets como nullptr
     analizadorLexicoWidget = nullptr;
     calculadoraWidget = nullptr;
+    ll1Widget = nullptr;
     
     setupUI();
     crearMenus();
@@ -60,8 +62,10 @@ void MainWindow::crearWidgetInicial() {
         "Seleccione una herramienta del menú superior para comenzar:\n\n"
         "• Analizador Léxico - Crear y gestionar AFN/AFD\n"
         "• Calculadora - Evaluación con recursividad por la izquierda\n"
+        "• LL(1) - Analizador sintáctico predictivo\n"
         "• Gramática - (Próximamente)\n"
     );
+
     instrucciones->setAlignment(Qt::AlignCenter);
     instrucciones->setWordWrap(true);
     QFont fuenteInstrucciones;
@@ -94,8 +98,16 @@ void MainWindow::crearMenus() {
     connect(accionCalculadora, &QAction::triggered, this, &MainWindow::mostrarCalculadora);
     menuHerramientas->addAction(accionCalculadora);
     
+    // ========== AGREGAR ESTO ==========
+    accionLL1 = new QAction("&LL(1)", this);
+    accionLL1->setShortcut(QKeySequence("Ctrl+3"));
+    accionLL1->setStatusTip("Abrir el analizador sintáctico LL(1)");
+    connect(accionLL1, &QAction::triggered, this, &MainWindow::mostrarLL1);
+    menuHerramientas->addAction(accionLL1);
+    // ===================================
+    
     accionGramatica = new QAction("&Gramática", this);
-    accionGramatica->setShortcut(QKeySequence("Ctrl+3"));
+    accionGramatica->setShortcut(QKeySequence("Ctrl+4"));  // <-- Cambiar de Ctrl+3 a Ctrl+4
     accionGramatica->setStatusTip("Abrir el módulo de gramáticas");
     accionGramatica->setEnabled(false); // Deshabilitado hasta implementar
     connect(accionGramatica, &QAction::triggered, this, &MainWindow::mostrarGramatica);
@@ -137,6 +149,15 @@ void MainWindow::mostrarCalculadora() {
     
     stackedWidget->setCurrentWidget(calculadoraWidget);
 }
+void MainWindow::mostrarLL1() {
+    // Crear el widget solo la primera vez (lazy loading)
+    if (!ll1Widget) {
+        ll1Widget = new LL1Widget(this);
+        stackedWidget->addWidget(ll1Widget);
+    }
+    
+    stackedWidget->setCurrentWidget(ll1Widget);
+}
 
 void MainWindow::mostrarGramatica() {
     QMessageBox::information(this, "Próximamente", 
@@ -152,6 +173,7 @@ void MainWindow::mostrarAcercaDe() {
         "<ul>"
         "<li>Analizador Léxico (AFN/AFD/Scanner)</li>"
         "<li>Calculadora con recursividad</li>"
+        "<li>LL(1) - Analizador sintáctico predictivo</li>"
         "<li>Gramática de gramáticas (próximamente)</li>"
         "</ul>"
     );

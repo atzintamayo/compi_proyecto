@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QTextEdit>
 #include <QLabel>
 
 #include "Calculadora.h"
@@ -17,19 +16,16 @@ public:
     ~CalculadoraWidget();
 
 private slots:
-    void onCalcular();
-    void onLimpiar();
+    void onCalcularClicked();  // Cambiado para coincidir con .cpp
 
 private:
-    void setupUI();
-    
     Calculadora* calculadora;
     
-    QLineEdit* txtExpresion;
-    QPushButton* btnCalcular;
-    QPushButton* btnLimpiar;
-    QLabel* lblResultado;
-    QTextEdit* txtPostfija;
+    // No necesitas declarar los widgets como miembros si usas findChild
+    // Pero es mejor práctica declararlos:
+    QLineEdit* inputField;
+    QLabel* resultadoLabel;
+    QLabel* rpnLabel;
 };
 
 #endif // CALCULADORAWIDGET_H

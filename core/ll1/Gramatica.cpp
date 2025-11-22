@@ -35,6 +35,11 @@ void Gramatica::limpiar() {
 bool Gramatica::cargarDesdeTexto(const std::string& texto) {
     limpiar();
     
+    // PASO 1: Parsear todas las producciones y construir conjunto de LHS (No Terminales)
+    std::set<std::string> lhs; // Lado izquierdo
+    std::set<std::string> rhs; // Lado derecho
+    std::vector<std::tuple<std::string, std::vector<std::string>>> produccionesTemp;
+    
     std::istringstream stream(texto);
     std::string linea;
     
@@ -48,64 +53,89 @@ bool Gramatica::cargarDesdeTexto(const std::string& texto) {
             continue;
         }
         
-        if (!parsearProduccion(linea)) {
-            limpiar();
-            return false;
+        // Eliminar ; final si existe
+        if (!linea.empty() && linea.back() == ';') {
+            linea.pop_back();
+        }
+        
+        // Buscar ->
+        size_t pos = linea.find("->");
+        if (pos == std::string::npos) {
+            continue;
+        }
+        
+        // Extraer LHS
+        std::string izqStr = linea.substr(0, pos);
+        izqStr.erase(0, izqStr.find_first_not_of(" \t"));
+        izqStr.erase(izqStr.find_last_not_of(" \t") + 1);
+        
+        if (izqStr.empty()) continue;
+        
+        lhs.insert(izqStr); // Marcar como No Terminal
+        
+        // Extraer RHS
+        std::string derStr = linea.substr(pos + 2);
+        derStr.erase(0, derStr.find_first_not_of(" \t"));
+        derStr.erase(derStr.find_last_not_of(" \t") + 1);
+        
+        // Dividir por |
+        std::istringstream derechaStream(derStr);
+        std::string alternativa;
+        
+        while (std::getline(derechaStream, alternativa, '|')) {
+            alternativa.erase(0, alternativa.find_first_not_of(" \t"));
+            alternativa.erase(alternativa.find_last_not_of(" \t") + 1);
+            
+            std::vector<std::string> simbolos;
+            
+            // Tokenizar RHS
+            if (alternativa != "epsilon" && alternativa != "ε" && alternativa != "e" && !alternativa.empty()) {
+                std::istringstream ss(alternativa);
+                std::string token;
+                while (ss >> token) {
+                    simbolos.push_back(token);
+                    rhs.insert(token); // Agregar a RHS
+                }
+            }
+            
+            produccionesTemp.push_back({izqStr, simbolos});
         }
     }
     
-    return !producciones.empty();
-}
-
-bool Gramatica::parsearProduccion(const std::string& linea) {
-    // Formato: A -> α | β | γ ;
-    // Eliminar el punto y coma final si existe
-    std::string lineaLimpia = linea;
-    if (!lineaLimpia.empty() && lineaLimpia.back() == ';') {
-        lineaLimpia.pop_back();
+    // PASO 2: Clasificar símbolos
+    // No Terminales = LHS
+    for (const auto& nt : lhs) {
+        noTerminales.insert(Simbolo(nt, NO_TERMINAL));
     }
     
-    // Buscar el ->
-    size_t pos = lineaLimpia.find("->");
-    if (pos == std::string::npos) {
-        return false;
+    // Terminales = RHS - LHS - {epsilon, ε, e}
+    for (const auto& simbolo : rhs) {
+        if (lhs.find(simbolo) == lhs.end() &&  // No está en LHS
+            simbolo != "epsilon" && simbolo != "ε" && simbolo != "e") {
+            terminales.insert(Simbolo(simbolo, TERMINAL));
+        }
     }
     
-    // Extraer lado izquierdo
-    std::string izqStr = lineaLimpia.substr(0, pos);
-    izqStr.erase(0, izqStr.find_first_not_of(" \t"));
-    izqStr.erase(izqStr.find_last_not_of(" \t") + 1);
-    
-    if (izqStr.empty()) {
-        return false;
-    }
-    
-    Simbolo izquierda(izqStr, NO_TERMINAL);
-    noTerminales.insert(izquierda);
-    
-    // Si es la primera producción, es el símbolo inicial
-    if (simboloInicial.nombre.empty()) {
-        simboloInicial = izquierda;
-    }
-    
-    // Extraer lado derecho
-    std::string derStr = lineaLimpia.substr(pos + 2);
-    derStr.erase(0, derStr.find_first_not_of(" \t"));
-    derStr.erase(derStr.find_last_not_of(" \t") + 1);
-    
-    // Dividir por |
-    std::istringstream derechaStream(derStr);
-    std::string alternativa;
-    
-    while (std::getline(derechaStream, alternativa, '|')) {
-        alternativa.erase(0, alternativa.find_first_not_of(" \t"));
-        alternativa.erase(alternativa.find_last_not_of(" \t") + 1);
+    // PASO 3: Crear producciones con tipo correcto
+    bool primeraProduccion = true;
+    for (const auto& [izq, der] : produccionesTemp) {
+        Simbolo izquierda(izq, NO_TERMINAL);
         
-        std::vector<Simbolo> derecha = tokenizarDerecha(alternativa);
+        if (primeraProduccion) {
+            simboloInicial = izquierda;
+            primeraProduccion = false;
+        }
+        
+        std::vector<Simbolo> derecha;
+        for (const auto& sim : der) {
+            TipoSimbolo tipo = (lhs.find(sim) != lhs.end()) ? NO_TERMINAL : TERMINAL;
+            derecha.push_back(Simbolo(sim, tipo));
+        }
+        
         agregarProduccion(izquierda, derecha);
     }
     
-    return true;
+    return !producciones.empty();
 }
 
 std::vector<Simbolo> Gramatica::tokenizarDerecha(const std::string& derecha) {
@@ -120,34 +150,11 @@ std::vector<Simbolo> Gramatica::tokenizarDerecha(const std::string& derecha) {
     std::string token;
     
     while (stream >> token) {
-        TipoSimbolo tipo = identificarTipo(token);
-        Simbolo sim(token, tipo);
-        
-        simbolos.push_back(sim);
-        
-        if (tipo == TERMINAL) {
-            terminales.insert(sim);
-        } else {
-            noTerminales.insert(sim);
-        }
+        // El tipo se determina después en cargarDesdeTexto
+        simbolos.push_back(Simbolo(token, TERMINAL));
     }
     
     return simbolos;
-}
-
-TipoSimbolo Gramatica::identificarTipo(const std::string& nombre) {
-    // Convención: 
-    // - Mayúscula inicial o todo mayúsculas = No terminal
-    // - Minúscula o símbolos = Terminal
-    
-    if (nombre.empty()) return TERMINAL;
-    
-    // Si empieza con mayúscula, es no terminal
-    if (std::isupper(nombre[0])) {
-        return NO_TERMINAL;
-    }
-    
-    return TERMINAL;
 }
 
 void Gramatica::agregarProduccion(const Simbolo& izq, const std::vector<Simbolo>& der) {

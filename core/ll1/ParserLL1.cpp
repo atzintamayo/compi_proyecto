@@ -85,24 +85,44 @@ bool ParserLL1::parsear(const std::vector<TokenLL1>& tokens) {
     traza.push_back(PasoParser(
         pilaToString(),
         entradaToString(tokens, indiceToken),
-        "Inicialización"
+        "Inicialización: Pila = [$, " + gramatica->getSimboloInicial().nombre + "]"
     ));
     
     // Algoritmo del parser predictivo
     while (!pila.empty()) {
         std::string tope = pila.top();
+        
+        // Verificar que no nos pasemos del final
+        if (indiceToken >= tokens.size()) {
+            mensajeError = "Error: Fin de entrada inesperado";
+            traza.push_back(PasoParser(
+                pilaToString(),
+                "",
+                mensajeError,
+                true
+            ));
+            return false;
+        }
+        
         TokenLL1 tokenActual = tokens[indiceToken];
         std::string terminal = tokenToTerminal(tokenActual);
         
-        // Caso 1: Tope es terminal
+        // Caso 1: Tope es terminal o $
         if (gramatica->esTerminal(tope) || tope == "$") {
             if (tope == terminal) {
-                // Match: consumir token y desapilar
+                // Match exitoso
                 pila.pop();
-                indiceToken++;
                 
                 std::ostringstream accion;
-                accion << "Match: " << tope;
+                accion << "Match: '" << tope << "'";
+                if (tope != "$") {
+                    accion << " con lexema \"" << tokenActual.lexema << "\"";
+                }
+                
+                // Solo avanzar si no es $
+                if (tope != "$") {
+                    indiceToken++;
+                }
                 
                 traza.push_back(PasoParser(
                     pilaToString(),
@@ -115,15 +135,19 @@ bool ParserLL1::parsear(const std::vector<TokenLL1>& tokens) {
                     traza.push_back(PasoParser(
                         "vacía",
                         "",
-                        "✓ Aceptado"
+                        "✓ Cadena ACEPTADA"
                     ));
                     return true;
                 }
             } else {
                 // Error: no coincide
                 std::ostringstream error;
-                error << "Error: Se esperaba '" << tope << "' pero se encontró '" 
-                      << terminal << "' en posición " << tokenActual.posicion;
+                error << "❌ Error de parsing: Se esperaba '" << tope 
+                      << "' pero se encontró '" << terminal << "'";
+                if (!tokenActual.lexema.empty()) {
+                    error << " (lexema: \"" << tokenActual.lexema << "\")";
+                }
+                error << " en posición " << tokenActual.posicion;
                 mensajeError = error.str();
                 
                 traza.push_back(PasoParser(
@@ -142,10 +166,15 @@ bool ParserLL1::parsear(const std::vector<TokenLL1>& tokens) {
             EntradaTabla entrada = tabla->getEntrada(tope, terminal);
             
             if (!entrada.valida) {
-                // Error: no hay producción
+                // Error: no hay producción en M[tope, terminal]
                 std::ostringstream error;
-                error << "Error: No hay producción para [" << tope << ", " 
-                      << terminal << "]";
+                error << "❌ Error sintáctico: No hay producción M[" 
+                      << tope << ", " << terminal << "]";
+                error << "\n   Entrada actual: '" << terminal << "'";
+                if (!tokenActual.lexema.empty()) {
+                    error << " (\"" << tokenActual.lexema << "\")";
+                }
+                error << " en posición " << tokenActual.posicion;
                 mensajeError = error.str();
                 
                 traza.push_back(PasoParser(
@@ -172,7 +201,8 @@ bool ParserLL1::parsear(const std::vector<TokenLL1>& tokens) {
             
             // Registrar acción
             std::ostringstream accion;
-            accion << "Aplicar: " << produccion.toString();
+            accion << "Aplicar producción #" << produccion.numero << ": " 
+                   << produccion.toString();
             
             traza.push_back(PasoParser(
                 pilaToString(),

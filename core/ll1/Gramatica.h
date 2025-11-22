@@ -82,13 +82,7 @@ private:
     Simbolo simboloInicial;
     int contadorProducciones;
     
-    // Parsear una línea de producción
-    bool parsearProduccion(const std::string& linea);
-    
-    // Identificar si un símbolo es terminal o no terminal
-    TipoSimbolo identificarTipo(const std::string& nombre);
-    
-    // Tokenizar el lado derecho de una producción
+    // Tokenizar el lado derecho de una producción (sin usar ahora)
     std::vector<Simbolo> tokenizarDerecha(const std::string& derecha);
 };
 

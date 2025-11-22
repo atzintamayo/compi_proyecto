@@ -348,46 +348,92 @@ void AnalizadorLexicoWidget::onGuardarAFD() {
         return;
     }
     
-    QString archivo = QFileDialog::getSaveFileName(this, 
-        "Guardar AFD", "", "Archivos AFD (*.afd);;Todos los archivos (*)");
+    // Intentar guardar en formato texto primero (más compatible)
+    QString archivo = QFileDialog::getSaveFileName(
+        this,
+        "Guardar AFD",
+        QDir::homePath() + "/mi_afd.txt",  // nombre sugerido
+        "Archivos de texto (*.txt);;Archivos AFD (*.afd);;Todos los archivos (*.*)",
+        nullptr,
+        QFileDialog::Options()
+    );
     
-    if (!archivo.isEmpty()) {
-        if (afdActual->GuardarAFD(archivo.toStdString())) {
-            QMessageBox::information(this, "Éxito", "AFD guardado correctamente");
-        } else {
-            QMessageBox::critical(this, "Error", "No se pudo guardar el AFD");
-        }
+    if (archivo.isEmpty()) {
+        return;  // Usuario canceló
+    }
+    
+    // Asegurarse de que tenga extensión
+    if (!archivo.contains('.')) {
+        archivo += ".txt";
+    }
+    
+    if (afdActual->GuardarAFD(archivo.toStdString())) {
+        QMessageBox::information(this, "Éxito", 
+            QString("AFD guardado correctamente en:\n%1").arg(archivo));
+    } else {
+        QMessageBox::critical(this, "Error", 
+            QString("No se pudo guardar el AFD en:\n%1\n\nVerifique que tenga permisos de escritura.")
+            .arg(archivo));
     }
 }
 
 void AnalizadorLexicoWidget::onCargarAFD() {
-    QString archivo = QFileDialog::getOpenFileName(this, 
-        "Cargar AFD", "", "Archivos AFD (*.afd);;Todos los archivos (*)");
+    QString archivo = QFileDialog::getOpenFileName(
+        this,
+        "Cargar AFD",
+        QDir::homePath(),
+        "Archivos de texto (*.txt);;Archivos AFD (*.afd);;Todos los archivos (*.*)",
+        nullptr,
+        QFileDialog::Options()
+    );
     
-    if (!archivo.isEmpty()) {
-        if (afdActual) delete afdActual;
-        afdActual = new AFD();
+    if (archivo.isEmpty()) {
+        return;  // Usuario canceló
+    }
+    
+    // Verificar que el archivo exista
+    if (!QFile::exists(archivo)) {
+        QMessageBox::critical(this, "Error", 
+            QString("El archivo no existe:\n%1").arg(archivo));
+        return;
+    }
+    
+    // Limpiar AFD anterior
+    if (afdActual) {
+        delete afdActual;
+        afdActual = nullptr;
+    }
+    
+    afdActual = new AFD();
+    
+    if (afdActual->CargarAFD(archivo.toStdString())) {
+        btnGuardarAFD->setEnabled(true);
+        btnEscanear->setEnabled(true);
         
-        if (afdActual->CargarAFD(archivo.toStdString())) {
-            btnGuardarAFD->setEnabled(true);
-            btnEscanear->setEnabled(true);
-            
-            labelInfoAFD->setText(QString("AFD cargado: %1 estados")
-                .arg(afdActual->NumEdos));
-            
-            mostrarAFDEnTabla();
-            
-            // Crear scanner
-            if (scanner) delete scanner;
-            scanner = new Scanner(afdActual);
-            scanner->setOmitirEspacios(chkOmitirEspacios->isChecked());
-            
-            QMessageBox::information(this, "Éxito", "AFD cargado correctamente");
-        } else {
-            QMessageBox::critical(this, "Error", "No se pudo cargar el AFD");
-            delete afdActual;
-            afdActual = nullptr;
-        }
+        labelInfoAFD->setText(QString("AFD cargado: %1 estados, alfabeto de %2 símbolos")
+            .arg(afdActual->NumEdos)
+            .arg(afdActual->alfabeto.size()));
+        
+        mostrarAFDEnTabla();
+        
+        // Crear scanner con el nuevo AFD
+        if (scanner) delete scanner;
+        scanner = new Scanner(afdActual);
+        scanner->setOmitirEspacios(chkOmitirEspacios->isChecked());
+        
+        QMessageBox::information(this, "Éxito", 
+            QString("AFD cargado correctamente desde:\n%1\n\nEstados: %2")
+            .arg(QFileInfo(archivo).fileName())
+            .arg(afdActual->NumEdos));
+    } else {
+        QMessageBox::critical(this, "Error", 
+            QString("No se pudo cargar el AFD desde:\n%1\n\nVerifique que el formato del archivo sea correcto.")
+            .arg(archivo));
+        delete afdActual;
+        afdActual = nullptr;
+        btnGuardarAFD->setEnabled(false);
+        btnEscanear->setEnabled(false);
+        labelInfoAFD->setText("No hay AFD generado");
     }
 }
 
@@ -426,19 +472,39 @@ void AnalizadorLexicoWidget::onEscanear() {
 }
 
 void AnalizadorLexicoWidget::onCargarArchivo() {
-    QString archivo = QFileDialog::getOpenFileName(this, 
-        "Abrir archivo", "", "Archivos de texto (*.txt);;Todos los archivos (*)");
+    // Usar QFileDialog estático con opciones más explícitas
+    QString archivo = QFileDialog::getOpenFileName(
+        this,                                          // parent
+        "Abrir archivo de texto",                     // caption
+        QDir::homePath(),                             // dir (directorio inicial)
+        "Archivos de texto (*.txt);;Todos los archivos (*.*)",  // filter
+        nullptr,                                       // selected filter
+        QFileDialog::Options()                        // options (por defecto)
+    );
     
-    if (!archivo.isEmpty()) {
-        QFile file(archivo);
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QTextStream in(&file);
-            textoEntrada->setPlainText(in.readAll());
-            file.close();
-        } else {
-            QMessageBox::critical(this, "Error", "No se pudo abrir el archivo");
-        }
+    if (archivo.isEmpty()) {
+        return;  // Usuario canceló
     }
+    
+    QFile file(archivo);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::critical(this, "Error", 
+            QString("No se pudo abrir el archivo:\n%1\n\nError: %2")
+            .arg(archivo)
+            .arg(file.errorString()));
+        return;
+    }
+    
+    QTextStream in(&file);
+    QString contenido = in.readAll();
+    file.close();
+    
+    textoEntrada->setPlainText(contenido);
+    
+    QMessageBox::information(this, "Éxito", 
+        QString("Archivo cargado correctamente:\n%1\n\nTamaño: %2 caracteres")
+        .arg(QFileInfo(archivo).fileName())
+        .arg(contenido.length()));
 }
 
 void AnalizadorLexicoWidget::onLimpiarScanner() {

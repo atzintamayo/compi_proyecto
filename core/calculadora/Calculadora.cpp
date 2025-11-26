@@ -51,18 +51,21 @@ static bool isFuncName(const std::string &s) {
 }
 
 static double applyFunction(const std::string &fname, double arg) {
-    if (fname == "sin" || fname == "sen") return std::sin(arg);
-    if (fname == "cos") return std::cos(arg);
-    if (fname == "tan") return std::tan(arg);
-    if (fname == "asin") return std::asin(arg);
-    if (fname == "acos") return std::acos(arg);
-    if (fname == "atan") return std::atan(arg);
+    double radianes = arg;
+    double grados = radianes * M_PI / 180.0;
+
+    if (fname == "sin" || fname == "sen") return std::sin(grados);
+    if (fname == "cos") return std::cos(grados);
+    if (fname == "tan") return std::tan(grados);
+    if (fname == "asin") return std::asin(grados);
+    if (fname == "acos") return std::acos(grados);
+    if (fname == "atan") return std::atan(grados);
     if (fname == "log") { // log base 10
-        if (arg <= 0.0) throw std::runtime_error("log: argumento no positivo");
+        if (grados <= 0.0) throw std::runtime_error("log: argumento no positivo");
         return std::log10(arg);
     }
     if (fname == "ln") {
-        if (arg <= 0.0) throw std::runtime_error("ln: argumento no positivo");
+        if (grados <= 0.0) throw std::runtime_error("ln: argumento no positivo");
         return std::log(arg);
     }
     if (fname == "exp") return std::exp(arg);

@@ -46,26 +46,59 @@ CalculadoraWidget::CalculadoraWidget(QWidget *parent)
     mainLayout->addWidget(grupoEntrada);
     
     // Grupo de resultados
+        // Grupo de resultados
     QGroupBox *grupoResultados = new QGroupBox("Resultados");
     auto *resultLayout = new QVBoxLayout();
-    
+
+    // Estilo del groupbox (cuadro contenedor)
+    grupoResultados->setStyleSheet(
+        "QGroupBox {"
+        "  border: 1px solid #444;"
+        "  border-radius: 8px;"
+        "  margin-top: 10px;"
+        "}"
+        "QGroupBox::title {"
+        "  subcontrol-origin: margin;"
+        "  left: 10px;"
+        "  padding: 0 4px 0 4px;"
+        "}"
+    );
+
+    // Resultado principal
     resultadoLabel = new QLabel("Resultado: -");
-    resultadoLabel->setStyleSheet("QLabel { padding: 10px; background-color: #f0f0f0; border-radius: 5px; }");
-    QFont fuenteResultado;
-    fuenteResultado.setPointSize(12);
-    fuenteResultado.setBold(true);
-    resultadoLabel->setFont(fuenteResultado);
-    
+    resultadoLabel->setWordWrap(true);
+    resultadoLabel->setStyleSheet(
+        "QLabel {"
+        "  padding: 10px 14px;"
+        "  background-color: #262626;"   // gris oscuro para modo oscuro
+        "  border-radius: 6px;"
+        "  border: 1px solid #555;"
+        "  font-size: 14px;"
+        "  font-weight: bold;"
+        "}"
+    );
+
+    // RPN
     rpnLabel = new QLabel("Notación Postfija (RPN): -");
-    rpnLabel->setStyleSheet("QLabel { padding: 10px; background-color: #f0f0f0; border-radius: 5px; }");
     rpnLabel->setWordWrap(true);
-    
+    rpnLabel->setStyleSheet(
+        "QLabel {"
+        "  margin-top: 6px;"
+        "  padding: 8px 14px;"
+        "  background-color: #262626;"
+        "  border-radius: 6px;"
+        "  border: 1px solid #555;"
+        "  font-family: monospace;"
+        "  font-size: 12px;"
+        "}"
+    );
+
     resultLayout->addWidget(resultadoLabel);
     resultLayout->addWidget(rpnLabel);
-    
+
     grupoResultados->setLayout(resultLayout);
     mainLayout->addWidget(grupoResultados);
-    
+
     // Información de funciones soportadas
     QLabel *infoFunciones = new QLabel(
         "<b>Funciones soportadas:</b><br>"

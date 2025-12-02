@@ -51,4 +51,17 @@ target_include_directories(LL1Core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/ll1
 )
 
+
+# ============================================
+# Biblioteca Core - Gramatica de gramaticas
+# ============================================
+add_library(Gramatica_de_gramaticasCore STATIC
+    gramatica_gramaticas/Gramaticas.cpp
+    gramatica_gramaticas/Gramaticas.h
+)
+
+target_include_directories(Gramatica_de_gramaticasCore PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/gramatica_gramaticas
+)
+
 # Puedes agregar más módulos core aquí siguiendo el mismo patrón

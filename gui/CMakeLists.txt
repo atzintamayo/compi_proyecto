@@ -26,6 +26,10 @@ set(GUI_SOURCES
     # Módulo: LL(1)
     modules/ll1/LL1Widget.cpp
     modules/ll1/LL1Widget.h
+
+    #Modulo: Gramatica de gramaticas
+    modules/gramatica_gramaticas/GramaticasWidget.cpp
+    modules/gramatica_gramaticas/GramaticasWidget.h
 )
 
 add_executable(CompiladorTools ${GUI_SOURCES})
@@ -37,6 +41,7 @@ target_link_libraries(CompiladorTools PRIVATE
     AnalizadorLexicoCore
     CalculadoraCore
     LL1Core
+    Gramatica_de_gramaticasCore
 )
 
 target_include_directories(CompiladorTools PRIVATE
@@ -45,7 +50,9 @@ target_include_directories(CompiladorTools PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/analizador_lexico
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/calculadora
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/ll1
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules/gramatica_gramaticas
     ${CMAKE_SOURCE_DIR}/core/analizador_lexico
     ${CMAKE_SOURCE_DIR}/core/calculadora
     ${CMAKE_SOURCE_DIR}/core/ll1
+    ${CMAKE_SOURCE_DIR}/core/gramatica_gramaticas
 )

@@ -2,6 +2,7 @@
 #include "modules/analizador_lexico/AnalizadorLexicoWidget.h"
 #include "modules/calculadora/CalculadoraWidget.h"
 #include "modules/ll1/LL1Widget.h"
+#include "modules/gramatica_gramaticas/GramaticasWidget.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
 
@@ -11,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     analizadorLexicoWidget = nullptr;
     calculadoraWidget = nullptr;
     ll1Widget = nullptr;
-    
+    gramaticasWidget = nullptr;
+
     setupUI();
     crearMenus();
     
@@ -63,7 +65,7 @@ void MainWindow::crearWidgetInicial() {
         "• Analizador Léxico - Crear y gestionar AFN/AFD\n"
         "• Calculadora - Evaluación con recursividad por la izquierda\n"
         "• LL(1) - Analizador sintáctico predictivo\n"
-        "• Gramática - (Próximamente)\n"
+        "• Gramática - Análisis de expresiones regulares\n" 
     );
 
     instrucciones->setAlignment(Qt::AlignCenter);
@@ -107,12 +109,12 @@ void MainWindow::crearMenus() {
     // ===================================
     
     accionGramatica = new QAction("&Gramática", this);
-    accionGramatica->setShortcut(QKeySequence("Ctrl+4"));  // <-- Cambiar de Ctrl+3 a Ctrl+4
-    accionGramatica->setStatusTip("Abrir el módulo de gramáticas");
-    accionGramatica->setEnabled(false); // Deshabilitado hasta implementar
+    accionGramatica->setShortcut(QKeySequence("Ctrl+4"));
+    accionGramatica->setStatusTip("Abrir el módulo de análisis de gramáticas");
+    accionGramatica->setEnabled(true);  // ← CAMBIAR A true
     connect(accionGramatica, &QAction::triggered, this, &MainWindow::mostrarGramatica);
     menuHerramientas->addAction(accionGramatica);
-    
+
     menuHerramientas->addSeparator();
     
     QAction* accionInicio = new QAction("&Inicio", this);
@@ -160,8 +162,12 @@ void MainWindow::mostrarLL1() {
 }
 
 void MainWindow::mostrarGramatica() {
-    QMessageBox::information(this, "Próximamente", 
-        "El módulo de Gramática estará disponible próximamente.");
+    // Crear el widget solo la primera vez (lazy loading)
+    if (!gramaticasWidget) {
+        gramaticasWidget = new GramaticasWidget(this);
+        stackedWidget->addWidget(gramaticasWidget);
+    }
+    stackedWidget->setCurrentWidget(gramaticasWidget);
 }
 
 void MainWindow::mostrarAcercaDe() {
@@ -174,7 +180,7 @@ void MainWindow::mostrarAcercaDe() {
         "<li>Analizador Léxico (AFN/AFD/Scanner)</li>"
         "<li>Calculadora con recursividad</li>"
         "<li>LL(1) - Analizador sintáctico predictivo</li>"
-        "<li>Gramática de gramáticas (próximamente)</li>"
+        "<li>Gramática - Análisis de expresiones regulares</li>"
         "</ul>"
     );
 }

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libGramatica_de_gramaticasCore.a CMakeFiles/Gramatica_de_gramaticasCore.dir/Gramatica_de_gramaticasCore_autogen/mocs_compilation.cpp.o CMakeFiles/Gramatica_de_gramaticasCore.dir/gramatica_gramaticas/Gramaticas.cpp.o
-/usr/bin/ranlib libGramatica_de_gramaticasCore.a

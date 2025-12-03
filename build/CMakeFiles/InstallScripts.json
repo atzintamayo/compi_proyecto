@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/mizta/Documents/atzinuni/compiladores/compi_proyecto/build/cmake_install.cmake",
+		"/Users/mizta/Documents/atzinuni/compiladores/compi_proyecto/build/core/cmake_install.cmake",
+		"/Users/mizta/Documents/atzinuni/compiladores/compi_proyecto/build/gui/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

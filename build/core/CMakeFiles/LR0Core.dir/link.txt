@@ -1,0 +1,2 @@
+/usr/bin/ar qc libLR0Core.a CMakeFiles/LR0Core.dir/LR0Core_autogen/mocs_compilation.cpp.o CMakeFiles/LR0Core.dir/lr0/ItemLR0.cpp.o CMakeFiles/LR0Core.dir/lr0/ElemTablaLR0.cpp.o CMakeFiles/LR0Core.dir/lr0/RenglonLR0.cpp.o CMakeFiles/LR0Core.dir/lr0/Inf_IrA.cpp.o CMakeFiles/LR0Core.dir/lr0/Simb.cpp.o CMakeFiles/LR0Core.dir/lr0/AnalizadorLR0.cpp.o
+/usr/bin/ranlib libLR0Core.a

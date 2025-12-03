@@ -1,0 +1,2 @@
+/usr/bin/ar qc libAnalizadorLexicoCore.a CMakeFiles/AnalizadorLexicoCore.dir/AnalizadorLexicoCore_autogen/mocs_compilation.cpp.o CMakeFiles/AnalizadorLexicoCore.dir/analizador_lexico/AFN.cpp.o CMakeFiles/AnalizadorLexicoCore.dir/analizador_lexico/AFD.cpp.o CMakeFiles/AnalizadorLexicoCore.dir/analizador_lexico/Estado.cpp.o CMakeFiles/AnalizadorLexicoCore.dir/analizador_lexico/Scanner.cpp.o CMakeFiles/AnalizadorLexicoCore.dir/analizador_lexico/AFNManager.cpp.o
+/usr/bin/ranlib libAnalizadorLexicoCore.a

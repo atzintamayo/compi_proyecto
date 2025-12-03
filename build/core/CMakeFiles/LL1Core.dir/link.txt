@@ -1,0 +1,2 @@
+/usr/bin/ar qc libLL1Core.a CMakeFiles/LL1Core.dir/LL1Core_autogen/mocs_compilation.cpp.o CMakeFiles/LL1Core.dir/ll1/Lexer.cpp.o CMakeFiles/LL1Core.dir/ll1/Gramatica.cpp.o CMakeFiles/LL1Core.dir/ll1/ConjuntosLL1.cpp.o CMakeFiles/LL1Core.dir/ll1/TablaLL1.cpp.o CMakeFiles/LL1Core.dir/ll1/ParserLL1.cpp.o
+/usr/bin/ranlib libLL1Core.a

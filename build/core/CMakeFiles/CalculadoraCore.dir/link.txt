@@ -1,0 +1,2 @@
+/usr/bin/ar qc libCalculadoraCore.a CMakeFiles/CalculadoraCore.dir/CalculadoraCore_autogen/mocs_compilation.cpp.o CMakeFiles/CalculadoraCore.dir/calculadora/Calculadora.cpp.o
+/usr/bin/ranlib libCalculadoraCore.a

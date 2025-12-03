@@ -3,6 +3,7 @@
 #include "modules/calculadora/CalculadoraWidget.h"
 #include "modules/ll1/LL1Widget.h"
 #include "modules/lr0/LR0Widget.h"
+#include "modules/gramatica_gramaticas/GramaticasWidget.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
 
@@ -14,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     ll1Widget = nullptr;
     lr0Widget = nullptr;
     
+    gramaticasWidget = nullptr;
+
     setupUI();
     crearMenus();
     
@@ -66,7 +69,7 @@ void MainWindow::crearWidgetInicial() {
         "• Calculadora - Evaluación con recursividad por la izquierda\n"
         "• LL(1) - Analizador sintáctico predictivo\n"
         "• LR(0) - Analizador sintáctico ascendente\n"
-        "• Gramática - (Próximamente)\n"
+        "• Gramática - Análisis de expresiones regulares\n" 
     );
 
     instrucciones->setAlignment(Qt::AlignCenter);
@@ -116,12 +119,12 @@ void MainWindow::crearMenus() {
     // ==================================
     
     accionGramatica = new QAction("&Gramática", this);
-    accionGramatica->setShortcut(QKeySequence("Ctrl+5"));  // Cambiar de Ctrl+4 a Ctrl+5
-    accionGramatica->setStatusTip("Abrir el módulo de gramáticas");
-    accionGramatica->setEnabled(false); // Deshabilitado hasta implementar
+    accionGramatica->setShortcut(QKeySequence("Ctrl+5"));
+    accionGramatica->setStatusTip("Abrir el módulo de análisis de gramáticas");
+    accionGramatica->setEnabled(true);  // ← CAMBIAR A true
     connect(accionGramatica, &QAction::triggered, this, &MainWindow::mostrarGramatica);
     menuHerramientas->addAction(accionGramatica);
-    
+
     menuHerramientas->addSeparator();
     
     QAction* accionInicio = new QAction("&Inicio", this);
@@ -183,14 +186,18 @@ void MainWindow::mostrarLR0() {
 }
 
 void MainWindow::mostrarGramatica() {
-    QMessageBox::information(this, "Próximamente", 
-        "El módulo de Gramática estará disponible próximamente.");
+    // Crear el widget solo la primera vez (lazy loading)
+    if (!gramaticasWidget) {
+        gramaticasWidget = new GramaticasWidget(this);
+        stackedWidget->addWidget(gramaticasWidget);
+    }
+    stackedWidget->setCurrentWidget(gramaticasWidget);
 }
 
 void MainWindow::mostrarAcercaDe() {
     QMessageBox::about(this, "Acerca de Compilador Tools",
         "<h2>Compilador Tools</h2>"
-        "<p>Suite de herramientas para el curso de Compiladores</p>"
+        "<p>Herramientas para el curso de Compiladores</p>"
         "<p><b>Versión:</b> 1.0</p>"
         "<p><b>Módulos disponibles:</b></p>"
         "<ul>"
@@ -199,6 +206,7 @@ void MainWindow::mostrarAcercaDe() {
         "<li>LL(1) - Analizador sintáctico predictivo</li>"
         "<li>LR(0) - Analizador sintáctico ascendente</li>"
         "<li>Gramática de gramáticas (próximamente)</li>"
+        "<li>Gramática - Análisis de expresiones regulares</li>"
         "</ul>"
     );
 }

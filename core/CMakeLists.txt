@@ -79,3 +79,17 @@ target_link_libraries(LR0Core PUBLIC
 )
 
 # Puedes agregar más módulos core aquí siguiendo el mismo patrón
+
+# ============================================
+# Biblioteca Core - Gramatica de gramaticas
+# ============================================
+add_library(Gramatica_de_gramaticasCore STATIC
+    gramatica_gramaticas/Gramaticas.cpp
+    gramatica_gramaticas/Gramaticas.h
+)
+
+target_include_directories(Gramatica_de_gramaticasCore PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/gramatica_gramaticas
+)
+
+# Puedes agregar más módulos core aquí siguiendo el mismo patrón

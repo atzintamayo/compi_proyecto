@@ -11,6 +11,7 @@
 class AnalizadorLexicoWidget;
 class CalculadoraWidget;
 class LL1Widget;
+class GramaticasWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -41,6 +42,7 @@ private:
     AnalizadorLexicoWidget* analizadorLexicoWidget;
     CalculadoraWidget* calculadoraWidget;
     LL1Widget* ll1Widget;
+    GramaticasWidget* gramaticasWidget;
     // Agregar más módulos aquí según sea necesario
     
     // Menús

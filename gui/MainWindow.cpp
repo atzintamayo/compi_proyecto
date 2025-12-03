@@ -2,6 +2,7 @@
 #include "modules/analizador_lexico/AnalizadorLexicoWidget.h"
 #include "modules/calculadora/CalculadoraWidget.h"
 #include "modules/ll1/LL1Widget.h"
+#include "modules/lr0/LR0Widget.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
 
@@ -11,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     analizadorLexicoWidget = nullptr;
     calculadoraWidget = nullptr;
     ll1Widget = nullptr;
+    lr0Widget = nullptr;
     
     setupUI();
     crearMenus();
@@ -63,6 +65,7 @@ void MainWindow::crearWidgetInicial() {
         "• Analizador Léxico - Crear y gestionar AFN/AFD\n"
         "• Calculadora - Evaluación con recursividad por la izquierda\n"
         "• LL(1) - Analizador sintáctico predictivo\n"
+        "• LR(0) - Analizador sintáctico ascendente\n"
         "• Gramática - (Próximamente)\n"
     );
 
@@ -98,16 +101,22 @@ void MainWindow::crearMenus() {
     connect(accionCalculadora, &QAction::triggered, this, &MainWindow::mostrarCalculadora);
     menuHerramientas->addAction(accionCalculadora);
     
-    // ========== AGREGAR ESTO ==========
     accionLL1 = new QAction("&LL(1)", this);
     accionLL1->setShortcut(QKeySequence("Ctrl+3"));
     accionLL1->setStatusTip("Abrir el analizador sintáctico LL(1)");
     connect(accionLL1, &QAction::triggered, this, &MainWindow::mostrarLL1);
     menuHerramientas->addAction(accionLL1);
-    // ===================================
+    
+    // ========== NUEVO: LR(0) ==========
+    accionLR0 = new QAction("LR(&0)", this);
+    accionLR0->setShortcut(QKeySequence("Ctrl+4"));
+    accionLR0->setStatusTip("Abrir el analizador sintáctico LR(0)");
+    connect(accionLR0, &QAction::triggered, this, &MainWindow::mostrarLR0);
+    menuHerramientas->addAction(accionLR0);
+    // ==================================
     
     accionGramatica = new QAction("&Gramática", this);
-    accionGramatica->setShortcut(QKeySequence("Ctrl+4"));  // <-- Cambiar de Ctrl+3 a Ctrl+4
+    accionGramatica->setShortcut(QKeySequence("Ctrl+5"));  // Cambiar de Ctrl+4 a Ctrl+5
     accionGramatica->setStatusTip("Abrir el módulo de gramáticas");
     accionGramatica->setEnabled(false); // Deshabilitado hasta implementar
     connect(accionGramatica, &QAction::triggered, this, &MainWindow::mostrarGramatica);
@@ -149,6 +158,7 @@ void MainWindow::mostrarCalculadora() {
     
     stackedWidget->setCurrentWidget(calculadoraWidget);
 }
+
 void MainWindow::mostrarLL1() {
     // Crear el widget solo la primera vez (lazy loading)
     if (!ll1Widget) {
@@ -157,6 +167,19 @@ void MainWindow::mostrarLL1() {
     }
     
     stackedWidget->setCurrentWidget(ll1Widget);
+}
+
+void MainWindow::mostrarLR0() {
+    // Crear el widget solo la primera vez (lazy loading)
+    if (!lr0Widget) {
+        // Nota: LR0Widget necesita una gramática y un analizador léxico
+        // Aquí puedes crear instancias temporales o usar las existentes
+        // Por ahora, pasamos nullptr y el widget puede crear sus propias instancias
+        lr0Widget = new LR0Widget(nullptr, this);
+        stackedWidget->addWidget(lr0Widget);
+    }
+    
+    stackedWidget->setCurrentWidget(lr0Widget);
 }
 
 void MainWindow::mostrarGramatica() {
@@ -174,6 +197,7 @@ void MainWindow::mostrarAcercaDe() {
         "<li>Analizador Léxico (AFN/AFD/Scanner)</li>"
         "<li>Calculadora con recursividad</li>"
         "<li>LL(1) - Analizador sintáctico predictivo</li>"
+        "<li>LR(0) - Analizador sintáctico ascendente</li>"
         "<li>Gramática de gramáticas (próximamente)</li>"
         "</ul>"
     );

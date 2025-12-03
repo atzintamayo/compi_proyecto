@@ -51,4 +51,31 @@ target_include_directories(LL1Core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/ll1
 )
 
+# ============================================
+# Biblioteca Core - LR(0)
+# ============================================
+add_library(LR0Core STATIC
+    lr0/ItemLR0.cpp
+    lr0/ItemLR0.h
+    lr0/ElemTablaLR0.cpp
+    lr0/ElemTablaLR0.h
+    lr0/RenglonLR0.cpp
+    lr0/RenglonLR0.h
+    lr0/Inf_IrA.cpp
+    lr0/Inf_IrA.h
+    lr0/Simb.cpp
+    lr0/Simb.h
+    lr0/AnalizadorLR0.cpp
+    lr0/AnalizadorLR0.h
+)
+
+target_include_directories(LR0Core PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/lr0
+)
+
+# LR0Core depende de LL1Core porque usa Gramatica
+target_link_libraries(LR0Core PUBLIC
+    LL1Core
+)
+
 # Puedes agregar más módulos core aquí siguiendo el mismo patrón
